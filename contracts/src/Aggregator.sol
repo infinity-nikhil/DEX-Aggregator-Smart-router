@@ -13,6 +13,13 @@ contract Aggregator {
 
     IERC20 public immutable usdg;
 
+    struct Leg {
+        PoolKey v4Key;
+        uint256 portionBps;
+    }
+
+    mapping(bytes32 => bool) public allowedV4Pool;
+
     error NotOwner();
     error NotPendingOwner();
     error FeeTooHigh();
@@ -54,5 +61,24 @@ contract Aggregator {
         if (fee > 0) {
             usdg.safeTransfer(feeWallet, fee);
         }
+    }
+
+    function setV4PoolAllowed(PoolKey calldata key, bool ok) external onlyOwner {
+    address c0 = Currency.unwrap(key.currency0);
+    address c1 = Currency.unwrap(key.currency1);
+    if (c0 != address(usdg) && c1 != address(usdg)) revert NotUsdgPool();
+    bytes32 h = keccak256(abi.encode(key));
+    allowedV4Pool[h] = ok;
+    }
+
+    function _checkLegs(Leg[] calldata legs) internal view {
+        uint256 n = legs.length;
+        if (n == 0 || n > MAX_LEGS) revert BadLegCount();
+        uint256 sum;
+        for (uint256 i; i < n; ++i) {
+            sum += legs[i].portionBps;
+            if (!allowedV4Pool[keccak256(abi.encode(legs[i].v4Key))]) revert PoolNotAllowed();
+        }
+        if (sum != 10_000) revert BadSplit();
     }
 }
