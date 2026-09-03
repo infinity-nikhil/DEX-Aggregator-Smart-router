@@ -15,7 +15,7 @@ contract Aggregator {
 
     struct Leg {
         PoolKey v4Key;
-        uint256 portionBps;
+        uint256 portionBps; 
     }
 
     mapping(bytes32 => bool) public allowedV4Pool;
@@ -64,11 +64,11 @@ contract Aggregator {
     }
 
     function setV4PoolAllowed(PoolKey calldata key, bool ok) external onlyOwner {
-    address c0 = Currency.unwrap(key.currency0);
-    address c1 = Currency.unwrap(key.currency1);
-    if (c0 != address(usdg) && c1 != address(usdg)) revert NotUsdgPool();
-    bytes32 h = keccak256(abi.encode(key));
-    allowedV4Pool[h] = ok;
+        address c0 = Currency.unwrap(key.currency0);
+        address c1 = Currency.unwrap(key.currency1);
+        if (c0 != address(usdg) && c1 != address(usdg)) revert NotUsdgPool();
+        bytes32 h = keccak256(abi.encode(key));
+        allowedV4Pool[h] = ok;
     }
 
     function _checkLegs(Leg[] calldata legs) internal view {
