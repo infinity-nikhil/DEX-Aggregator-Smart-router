@@ -36,14 +36,17 @@ contract Aggregator {
     }
 
     function transferOwnership(address newOwner) external onlyOwner {
-        pendingOwner = newOwner;
+        pendingOwner = newOwner; //only owner can call giving a new address as param 
+        //the new address get's stored inside an empty var called pending owner
+        //Now the receiver will check that "Ok this is my contract address, I accept the owner ship"
     }
 
     function acceptOwnership() external {
-        if (msg.sender != pendingOwner) revert NotPendingOwner();
-
-        owner = pendingOwner;
-        pendingOwner = address(0);
+        //This is th second part of the above function 
+        if (msg.sender != pendingOwner) revert NotPendingOwner(); //if the address is not his he can't call it
+        //And if the owner asign the wrong wallet address then no worries the wrong address will stay in pending var 
+        owner = pendingOwner; // Now here the owner address gets changes
+        pendingOwner = address(0); // And pending address becomes empty for next time use 
     }
 
     function setFee(uint16 feeBps_) external onlyOwner{
