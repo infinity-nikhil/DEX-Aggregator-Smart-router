@@ -26,3 +26,8 @@ fee = percentage taken as the fee
 rest = remaining amount after the fee
 
 Example: if usdgLeg = 1000 and feeBps = 50 → 5 USDG fee + 995 USDG remaining.
+
+Now on to the _skim function 
+If fee > 0 → transfer that amount of USDG to feeWallet.
+If fee == 0 → do nothing.
+safeTransfer() safely transfers the ERC-20 tokens.
